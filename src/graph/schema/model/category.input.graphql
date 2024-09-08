@@ -1,0 +1,16 @@
+input CategoryAdd {
+  name: String!
+  description: String!
+  parent_id: String! = ""
+}
+
+input CategoryUpdate {
+  category_id: String!
+
+  name: String
+  description: String
+}
+
+input CategoryDelete {
+  category_id: String!
+}

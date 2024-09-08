@@ -1,0 +1,15 @@
+type Product {
+  id: String!
+  name: String!
+  image: String!
+  description: String!
+  code: String!
+  unit_price: Float!
+  catalog_link: String!
+  category: Category! @goField(forceResolver: true)
+}
+
+type ProductPagination {
+  rows: [Product!]!
+  paging: Pagination!
+}

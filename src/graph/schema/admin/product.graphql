@@ -1,0 +1,15 @@
+extend type Query {
+  productDetail(product_id: String!): Product!
+  productPagination(
+    page: Int!
+    limit: Int!
+    order_by: String
+    search: Map
+  ): ProductPagination!
+}
+
+extend type Mutation {
+  productAdd(data: ProductAdd!): Product!
+  productUpdate(data: ProductUpdate!): Product!
+  productDelete(data: ProductDelete!): Product!
+}
