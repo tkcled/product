@@ -21,11 +21,3 @@ type Pagination {
   total_page: Int!
   total: Int!
 }
-
-extend type Staff @key(fields: "id") {
-  id: String! @external
-}
-
-extend type Workspace @key(fields: "id") {
-  id: String! @external
-}

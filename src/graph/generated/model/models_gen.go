@@ -91,15 +91,3 @@ type ProductUpdate struct {
 
 type Query struct {
 }
-
-type Staff struct {
-	ID string `json:"id"`
-}
-
-func (Staff) IsEntity() {}
-
-type Workspace struct {
-	ID string `json:"id"`
-}
-
-func (Workspace) IsEntity() {}

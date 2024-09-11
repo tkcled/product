@@ -39,5 +39,9 @@ func ConnectDatabse(ctx context.Context) error {
 		return err
 	}
 
+	if err := collection.LoadCategoryCollectionMongo(mongoClient); err != nil {
+		return err
+	}
+
 	return nil
 }
