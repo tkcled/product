@@ -1,6 +1,6 @@
 extend type Query {
   categoryDetail(category_id: String!): Category!
-  categoryList(parent_id: String!): [Category!]!
+  categoryList(parent_id: String! = ""): [Category!]!
 }
 
 extend type Mutation {

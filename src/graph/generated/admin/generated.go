@@ -668,7 +668,7 @@ type ProductPagination {
 `, BuiltIn: false},
 	{Name: "../../schema/admin/category.graphql", Input: `extend type Query {
   categoryDetail(category_id: String!): Category!
-  categoryList(parent_id: String!): [Category!]!
+  categoryList(parent_id: String! = ""): [Category!]!
 }
 
 extend type Mutation {
