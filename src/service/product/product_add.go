@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	src_const "hshelby-tkcled-product/src/const"
 	"hshelby-tkcled-product/src/database/collection"
@@ -64,6 +65,9 @@ func ProductAdd(ctx context.Context, c *ProductAddCommand) (result *model.Produc
 		CatalogLink:      c.CatalogLink,
 		CategoryID:       c.CategoryID,
 		ParentCategoryID: c.ParentCategoryID,
+
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	_, err = collection.Product().Collection().InsertOne(ctx, result)

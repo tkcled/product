@@ -24,7 +24,6 @@ func ListCategory(ctx context.Context, c CategoryListCommand) (results []model.C
 
 	cur, err := collection.Category().Collection().Find(ctx, bson.M{"parent_id": c.ParentID})
 	if err != nil {
-		log.Println("err", err)
 		codeErr := src_const.ServiceErr_Product + src_const.ElementErr_Category + src_const.InternalError
 		return nil, fmt.Errorf(codeErr)
 	}

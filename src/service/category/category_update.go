@@ -34,7 +34,7 @@ func CategoryUpdate(ctx context.Context, c *CategoryUpdateCommand) (result *mode
 	}
 
 	result = &model.Category{}
-	err = collection.Product().Collection().FindOne(ctx, bson.M{"_id": c.CategoryID}).Decode(result)
+	err = collection.Category().Collection().FindOne(ctx, bson.M{"_id": c.CategoryID}).Decode(result)
 	if err != nil {
 		log.Println("CategoryUpdate", map[string]interface{}{"command: ": c}, err)
 		codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Category, src_const.InternalError, err)

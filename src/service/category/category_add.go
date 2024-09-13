@@ -3,6 +3,7 @@ package service_category
 import (
 	"context"
 	"fmt"
+	"time"
 
 	src_const "hshelby-tkcled-product/src/const"
 	"hshelby-tkcled-product/src/database/collection"
@@ -24,6 +25,9 @@ func CategoryAdd(ctx context.Context, c *CategoryAddCommand) (result *model.Cate
 		Name:        c.Name,
 		Description: c.Description,
 		ParentID:    c.ParentID,
+
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	_, err = collection.Category().Collection().InsertOne(ctx, result)

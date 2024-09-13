@@ -1,6 +1,6 @@
 input CategoryAdd {
   name: String!
-  description: String!
+  description: String! = ""
   parent_id: String! = ""
 }
 

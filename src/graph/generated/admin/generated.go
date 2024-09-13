@@ -570,7 +570,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../../schema/model/category.input.graphql", Input: `input CategoryAdd {
   name: String!
-  description: String!
+  description: String! = ""
   parent_id: String! = ""
 }
 
@@ -4797,6 +4797,9 @@ func (ec *executionContext) unmarshalInputCategoryAdd(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
+	if _, present := asMap["description"]; !present {
+		asMap["description"] = ""
+	}
 	if _, present := asMap["parent_id"]; !present {
 		asMap["parent_id"] = ""
 	}
