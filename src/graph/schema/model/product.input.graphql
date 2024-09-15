@@ -6,7 +6,6 @@ input ProductAdd {
   unit_price: Float!
   catalog_link: String!
   category_id: String!
-  parent_category_id: String!
 }
 
 input ProductUpdate {
@@ -18,7 +17,6 @@ input ProductUpdate {
   unit_price: Float
   catalog_link: String
   category_id: String
-  parent_category_id: String
 }
 
 input ProductDelete {

@@ -24,7 +24,6 @@ func CategoryAdd(ctx context.Context, c *CategoryAddCommand) (result *model.Cate
 
 		Name:        c.Name,
 		Description: c.Description,
-		ParentID:    c.ParentID,
 
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

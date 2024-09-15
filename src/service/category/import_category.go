@@ -92,14 +92,11 @@ func processCSVFileCategory(file io.Reader, parentCategories map[string]string) 
 			continue
 		}
 
-		parentID := parentCategories[record[2]]
-
 		category := model.Category{
 			ID: primitive.NewObjectID().Hex(),
 
 			Name:        record[0],
 			Description: record[1],
-			ParentID:    parentID,
 		}
 
 		operation := mongo.NewInsertOneModel().SetDocument(category)

@@ -3,11 +3,9 @@
 package graph_model
 
 type Category struct {
-	ID          string     `json:"id"`
-	Name        string     `json:"name"`
-	Description string     `json:"description"`
-	Parent      *Category  `json:"parent"`
-	Children    []Category `json:"children"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type CategoryAdd struct {
@@ -59,14 +57,13 @@ type Product struct {
 }
 
 type ProductAdd struct {
-	Name             string  `json:"name"`
-	Image            string  `json:"image"`
-	Description      string  `json:"description"`
-	Code             string  `json:"code"`
-	UnitPrice        float64 `json:"unit_price"`
-	CatalogLink      string  `json:"catalog_link"`
-	CategoryID       string  `json:"category_id"`
-	ParentCategoryID string  `json:"parent_category_id"`
+	Name        string  `json:"name"`
+	Image       string  `json:"image"`
+	Description string  `json:"description"`
+	Code        string  `json:"code"`
+	UnitPrice   float64 `json:"unit_price"`
+	CatalogLink string  `json:"catalog_link"`
+	CategoryID  string  `json:"category_id"`
 }
 
 type ProductDelete struct {
@@ -79,14 +76,13 @@ type ProductPagination struct {
 }
 
 type ProductUpdate struct {
-	ID               string   `json:"id"`
-	Name             *string  `json:"name,omitempty"`
-	Description      *string  `json:"description,omitempty"`
-	Code             *string  `json:"code,omitempty"`
-	UnitPrice        *float64 `json:"unit_price,omitempty"`
-	CatalogLink      *string  `json:"catalog_link,omitempty"`
-	CategoryID       *string  `json:"category_id,omitempty"`
-	ParentCategoryID *string  `json:"parent_category_id,omitempty"`
+	ID          string   `json:"id"`
+	Name        *string  `json:"name,omitempty"`
+	Description *string  `json:"description,omitempty"`
+	Code        *string  `json:"code,omitempty"`
+	UnitPrice   *float64 `json:"unit_price,omitempty"`
+	CatalogLink *string  `json:"catalog_link,omitempty"`
+	CategoryID  *string  `json:"category_id,omitempty"`
 }
 
 type Query struct {
