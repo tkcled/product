@@ -19,6 +19,7 @@ import (
 )
 
 func ImportProduct(w http.ResponseWriter, r *http.Request) {
+	log.Println("start import product")
 	r.ParseMultipartForm(10 << 20)
 
 	// get file
