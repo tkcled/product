@@ -429,7 +429,6 @@ input CategoryDelete {
   unit_price: Float!
   catalog_link: String!
   category_id: String!
-  parent_category_id: String!
 }
 
 input ProductUpdate {
@@ -441,7 +440,6 @@ input ProductUpdate {
   unit_price: Float
   catalog_link: String
   category_id: String
-  parent_category_id: String
 }
 
 input ProductDelete {
@@ -3857,7 +3855,7 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "image", "description", "code", "unit_price", "catalog_link", "category_id", "parent_category_id"}
+	fieldsInOrder := [...]string{"name", "image", "description", "code", "unit_price", "catalog_link", "category_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3913,13 +3911,6 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 				return it, err
 			}
 			it.CategoryID = data
-		case "parent_category_id":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parent_category_id"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ParentCategoryID = data
 		}
 	}
 
@@ -3960,7 +3951,7 @@ func (ec *executionContext) unmarshalInputProductUpdate(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "description", "code", "unit_price", "catalog_link", "category_id", "parent_category_id"}
+	fieldsInOrder := [...]string{"id", "name", "description", "code", "unit_price", "catalog_link", "category_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4016,13 +4007,6 @@ func (ec *executionContext) unmarshalInputProductUpdate(ctx context.Context, obj
 				return it, err
 			}
 			it.CategoryID = data
-		case "parent_category_id":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parent_category_id"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ParentCategoryID = data
 		}
 	}
 

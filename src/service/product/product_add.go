@@ -14,14 +14,13 @@ import (
 )
 
 type ProductAddCommand struct {
-	Name             string
-	Image            string
-	Description      string
-	Code             string
-	UnitPrice        float64
-	CatalogLink      string
-	CategoryID       string
-	ParentCategoryID string
+	Name        string
+	Image       string
+	Description string
+	Code        string
+	UnitPrice   float64
+	CatalogLink string
+	CategoryID  string
 }
 
 func (c *ProductAddCommand) Valid() error {
@@ -57,14 +56,13 @@ func ProductAdd(ctx context.Context, c *ProductAddCommand) (result *model.Produc
 	result = &model.Product{
 		ID: primitive.NewObjectID().Hex(),
 
-		Name:             c.Name,
-		Image:            c.Image,
-		Description:      c.Description,
-		Code:             c.Code,
-		UnitPrice:        c.UnitPrice,
-		CatalogLink:      c.CatalogLink,
-		CategoryID:       c.CategoryID,
-		ParentCategoryID: c.ParentCategoryID,
+		Name:        c.Name,
+		Image:       c.Image,
+		Description: c.Description,
+		Code:        c.Code,
+		UnitPrice:   c.UnitPrice,
+		CatalogLink: c.CatalogLink,
+		CategoryID:  c.CategoryID,
 
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
