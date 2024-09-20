@@ -14,13 +14,12 @@ import (
 type ProductUpdateCommand struct {
 	ProductID string
 
-	Name             *string
-	Description      *string
-	Code             *string
-	UnitPrice        *float64
-	CatalogLink      *string
-	CategoryID       *string
-	ParentCategoryID *string
+	Name        *string
+	Description *string
+	Code        *string
+	UnitPrice   *float64
+	CatalogLink *string
+	CategoryID  *string
 }
 
 func (c *ProductUpdateCommand) Valid() error {
@@ -86,9 +85,8 @@ func ProductUpdate(ctx context.Context, c *ProductUpdateCommand) (result *model.
 		updated["catalog_link"] = *c.CatalogLink
 	}
 
-	if c.CategoryID != nil && c.ParentCategoryID != nil {
+	if c.CategoryID != nil {
 		updated["category_id"] = *c.CategoryID
-		updated["parent_category_id"] = *c.ParentCategoryID
 	}
 
 	_, err = collection.Product().Collection().UpdateByID(ctx, c.ProductID, bson.M{"$set": updated})
