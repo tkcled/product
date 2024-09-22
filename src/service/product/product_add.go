@@ -15,7 +15,6 @@ import (
 
 type ProductAddCommand struct {
 	Name        string
-	Image       string
 	Description string
 	Code        string
 	UnitPrice   float64
@@ -57,7 +56,6 @@ func ProductAdd(ctx context.Context, c *ProductAddCommand) (result *model.Produc
 		ID: primitive.NewObjectID().Hex(),
 
 		Name:        c.Name,
-		Image:       c.Image,
 		Description: c.Description,
 		Code:        c.Code,
 		UnitPrice:   c.UnitPrice,

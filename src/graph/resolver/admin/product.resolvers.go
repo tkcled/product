@@ -16,7 +16,6 @@ import (
 func (r *mutationResolver) ProductAdd(ctx context.Context, data graph_model.ProductAdd) (*graph_model.Product, error) {
 	input := &service_product.ProductAddCommand{
 		Name:        data.Name,
-		Image:       data.Image,
 		Description: data.Description,
 		Code:        data.Code,
 		UnitPrice:   data.UnitPrice,

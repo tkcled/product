@@ -60,7 +60,6 @@ type Product struct {
 
 type ProductAdd struct {
 	Name        string  `json:"name"`
-	Image       string  `json:"image"`
 	Description string  `json:"description"`
 	Code        string  `json:"code"`
 	UnitPrice   float64 `json:"unit_price"`

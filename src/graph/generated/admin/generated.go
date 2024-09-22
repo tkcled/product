@@ -587,7 +587,6 @@ input CategoryDelete {
 `, BuiltIn: false},
 	{Name: "../../schema/model/product.input.graphql", Input: `input ProductAdd {
   name: String!
-  image: String!
   description: String!
   code: String!
   unit_price: Float!
@@ -4911,7 +4910,7 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "image", "description", "code", "unit_price", "catalog_link", "category_id"}
+	fieldsInOrder := [...]string{"name", "description", "code", "unit_price", "catalog_link", "category_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4925,13 +4924,6 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 				return it, err
 			}
 			it.Name = data
-		case "image":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Image = data
 		case "description":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
 			data, err := ec.unmarshalNString2string(ctx, v)
