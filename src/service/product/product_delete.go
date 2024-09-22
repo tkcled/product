@@ -31,7 +31,7 @@ func ProductDelete(ctx context.Context, c *ProductDeleteCommand) (result *model.
 	}
 
 	result = &model.Product{}
-	err = collection.Product().Collection().FindOne(ctx, bson.M{"id": c.ProductID}).Decode(result)
+	err = collection.Product().Collection().FindOne(ctx, bson.M{"_id": c.ProductID}).Decode(result)
 	if err != nil {
 		log.Println("ProductDelete", map[string]interface{}{"command: ": c}, err)
 		codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
