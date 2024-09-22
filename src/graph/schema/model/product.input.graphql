@@ -1,6 +1,5 @@
 input ProductAdd {
   name: String!
-  image: String!
   description: String!
   code: String!
   unit_price: Float!

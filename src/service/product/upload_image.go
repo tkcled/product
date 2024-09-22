@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"hshelby-tkcled-product/config"
+	"hshelby-tkcled-product/src/database/collection"
 	"hshelby-tkcled-product/src/utilities"
 	"io"
 	"log"
@@ -14,6 +15,7 @@ import (
 	"path/filepath"
 
 	firebase "firebase.google.com/go"
+	"go.mongodb.org/mongo-driver/bson"
 	"google.golang.org/api/option"
 )
 
@@ -25,7 +27,7 @@ func UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := queryValues.Get("code")
+	productID := queryValues.Get("product_id")
 
 	exePath, err := os.Getwd()
 	if err != nil {
@@ -70,8 +72,8 @@ func UploadImage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	writer := bucketHandle.Object(code + ".png").NewWriter(context.Background())
-	writer.ObjectAttrs.Metadata = map[string]string{"firebaseStorageDownloadTokens": code}
+	writer := bucketHandle.Object(productID + ".png").NewWriter(context.Background())
+	writer.ObjectAttrs.Metadata = map[string]string{"firebaseStorageDownloadTokens": productID}
 	defer writer.Close()
 
 	_, err = io.Copy(writer, file)
@@ -81,7 +83,16 @@ func UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	avatar := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s.png?alt=media&token=%s", config.Get().BucketName, code, code)
+	image := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s.png?alt=media&token=%s", config.Get().BucketName, productID, productID)
 
-	utilities.WriteJSON(w, http.StatusOK, avatar)
+	updated := make(map[string]interface{})
+	updated["image"] = image
+	_, err = collection.Product().Collection().UpdateOne(context.Background(), bson.M{"_id": productID}, bson.M{"$set": updated})
+	if err != nil {
+		log.Println("[UploadImage] io.Copy", err)
+		utilities.WriteJSON(w, http.StatusInternalServerError, nil)
+		return
+	}
+
+	utilities.WriteJSON(w, http.StatusOK, image)
 }

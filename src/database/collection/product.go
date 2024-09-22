@@ -18,7 +18,7 @@ import (
 const ProductCollection = "product"
 
 const (
-	PrductIndexCategory = "category_id"
+	PrductIndexCode = "code"
 )
 
 var (
@@ -67,10 +67,10 @@ func (repo *ProductMongoCollection) SetIndex() {
 	indexes := []mongoDriver.IndexModel{
 		{
 			Keys: bson.M{
-				PrductIndexCategory: 1,
+				PrductIndexCode: 1,
 			},
 			Options: &options.IndexOptions{
-				Name:   utilities.SetString(PrductIndexCategory),
+				Name:   utilities.SetString(PrductIndexCode),
 				Unique: utilities.SetBool(true),
 			},
 		},
@@ -85,7 +85,7 @@ func (repo *ProductMongoCollection) SetIndex() {
 
 func (repo *ProductMongoCollection) needIndex(col *mongoDriver.Collection) bool {
 	keyIndexes := []string{
-		PrductIndexCategory,
+		PrductIndexCode,
 	}
 
 	listIndexes, err := col.Indexes().ListSpecifications(context.Background())
