@@ -13,6 +13,10 @@ import (
 
 // Category is the resolver for the category field.
 func (r *productResolver) Category(ctx context.Context, obj *graph_model.Product) (*graph_model.Category, error) {
+	if obj.Category.ID == "" {
+		return &graph_model.Category{}, nil
+	}
+
 	input := &service_category.CategoryDetailCommand{
 		CategoryID: obj.Category.ID,
 	}

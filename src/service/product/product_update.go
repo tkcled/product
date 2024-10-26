@@ -63,7 +63,7 @@ func ProductUpdate(ctx context.Context, c *ProductUpdateCommand) (result *model.
 		condition := make(map[string]interface{})
 		condition["code"] = *c.Code
 		cnt, err := collection.Product().Collection().CountDocuments(ctx, condition)
-		if err == nil && cnt > 0 {
+		if err != nil {
 			log.Println("ProductUpdate", map[string]interface{}{"command: ": c}, err)
 			codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
 			return nil, fmt.Errorf(codeErr)

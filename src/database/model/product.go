@@ -31,9 +31,12 @@ func (p *Product) ConvertToModelGraph() *graph_model.Product {
 		Code:        p.Code,
 		UnitPrice:   p.UnitPrice,
 		CatalogLink: p.CatalogLink,
-		Category: graph_model.Category{
+	}
+
+	if p.CategoryID != "" {
+		data.Category = graph_model.Category{
 			ID: p.CategoryID,
-		},
+		}
 	}
 
 	return &data

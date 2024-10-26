@@ -92,7 +92,7 @@ func processCSVFileProduct(file io.Reader, currentCategories map[string]model.Ca
 			continue
 		}
 
-		category := currentCategories[record[6]]
+		category := currentCategories[record[4]]
 
 		product := model.Product{
 			ID: primitive.NewObjectID().Hex(),
@@ -101,7 +101,6 @@ func processCSVFileProduct(file io.Reader, currentCategories map[string]model.Ca
 			Image:       record[1],
 			Description: record[2],
 			Code:        record[3],
-			UnitPrice:   utilities.StringToFloat64(record[4]),
 			CatalogLink: record[5],
 			CategoryID:  category.ID,
 		}

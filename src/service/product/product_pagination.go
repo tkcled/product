@@ -72,6 +72,7 @@ func ProductPagination(ctx context.Context, c *ProductPaginationCommand) (total 
 	if c.OrderBy == "" {
 		objOrderBy = bson.M{"name": src_const.DESC}
 	}
+	fmt.Println(condition)
 
 	matchStage := bson.D{{Key: "$match", Value: condition}}
 

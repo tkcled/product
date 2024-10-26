@@ -9,7 +9,7 @@ if [ -z $1 ]; then
 fi
 
 # build image
-docker build -f deployments/Dockerfile --platform=linux/amd64 -t  registry.ctisoftware.vn/cti/metabox/backend/school/athenticator:"$tag_image" .
+docker build -f deployments/Dockerfile --platform=linux/amd64 -t  hiepnccti/tkcled-product:"$tag_image" .
 
 
 # node script/change-version-after-build-docker-image.js $tag_image

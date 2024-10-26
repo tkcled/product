@@ -63,7 +63,6 @@ func v1(r chi.Router) {
 			r.Handle("/tkcled", srvAdmin)
 		})
 
-		r.With(middleware.AuthMiddleware())
 		r.Route("/upload-file", func(r chi.Router) {
 			r.Post("/image", service_product.UploadImage)
 			r.Post("/import-product", service_product.ImportProduct)

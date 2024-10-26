@@ -31,6 +31,8 @@ ENV ADDR_GRPC 0.0.0.0:9091
 COPY --from=builder /go/src/app/cmd/app .
 COPY ./config/.env .
 
+COPY ./serviceAccountKey.json ../
+
 RUN apk update && apk add libc6-compat
 
 RUN chmod +x ./app
