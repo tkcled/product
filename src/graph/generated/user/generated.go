@@ -423,7 +423,7 @@ input CategoryDelete {
 `, BuiltIn: false},
 	{Name: "../../schema/model/product.input.graphql", Input: `input ProductAdd {
   name: String!
-  description: String!
+  description: String! = ""
   code: String!
   unit_price: Float!
   catalog_link: String!
@@ -3852,6 +3852,10 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
+	}
+
+	if _, present := asMap["description"]; !present {
+		asMap["description"] = ""
 	}
 
 	fieldsInOrder := [...]string{"name", "description", "code", "unit_price", "catalog_link", "category_id"}

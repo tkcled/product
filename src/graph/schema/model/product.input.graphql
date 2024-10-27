@@ -1,6 +1,6 @@
 input ProductAdd {
   name: String!
-  description: String!
+  description: String! = ""
   code: String!
   unit_price: Float!
   catalog_link: String!

@@ -3,7 +3,6 @@ package service_product
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	src_const "hshelby-tkcled-product/src/const"
@@ -37,20 +36,20 @@ func ProductAdd(ctx context.Context, c *ProductAddCommand) (result *model.Produc
 		return nil, fmt.Errorf(codeErr)
 	}
 
-	condition := make(map[string]interface{})
-	condition["code"] = c.Code
+	// condition := make(map[string]interface{})
+	// condition["code"] = c.Code
 
-	cnt, err := collection.Product().Collection().CountDocuments(ctx, condition)
-	if err == nil && cnt > 0 {
-		log.Println("ProductAdd", map[string]interface{}{"command: ": c}, err)
-		codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
-		return nil, fmt.Errorf(codeErr)
-	}
+	// cnt, err := collection.Product().Collection().CountDocuments(ctx, condition)
+	// if err == nil && cnt > 0 {
+	// 	log.Println("ProductAdd", map[string]interface{}{"command: ": c}, err)
+	// 	codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
+	// 	return nil, fmt.Errorf(codeErr)
+	// }
 
-	if cnt > 0 {
-		codeErr := fmt.Sprintf("%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.ProductCodeExist)
-		return nil, fmt.Errorf(codeErr)
-	}
+	// if cnt > 0 {
+	// 	codeErr := fmt.Sprintf("%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.ProductCodeExist)
+	// 	return nil, fmt.Errorf(codeErr)
+	// }
 
 	result = &model.Product{
 		ID: primitive.NewObjectID().Hex(),

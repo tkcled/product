@@ -31,7 +31,7 @@ func CategoryDelete(ctx context.Context, c *CategoryDeleteCommand) (result *mode
 	}
 
 	result = &model.Category{}
-	err = collection.Category().Collection().FindOne(ctx, bson.M{"id": c.CategoryID}).Decode(result)
+	err = collection.Category().Collection().FindOne(ctx, bson.M{"_id": c.CategoryID}).Decode(result)
 	if err != nil {
 		log.Println("CategoryDelete", map[string]interface{}{"command: ": c}, err)
 		codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Category, src_const.InternalError, err)
@@ -42,6 +42,14 @@ func CategoryDelete(ctx context.Context, c *CategoryDeleteCommand) (result *mode
 	condition["_id"] = c.CategoryID
 
 	_, err = collection.Category().Collection().DeleteOne(ctx, condition)
+	if err != nil {
+		codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Category, src_const.InternalError, err)
+		return nil, fmt.Errorf(codeErr)
+	}
+
+	condition["parent_id"] = c.CategoryID
+
+	_, err = collection.Category().Collection().DeleteMany(ctx, condition)
 	if err != nil {
 		codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Category, src_const.InternalError, err)
 		return nil, fmt.Errorf(codeErr)

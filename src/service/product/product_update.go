@@ -47,45 +47,41 @@ func ProductUpdate(ctx context.Context, c *ProductUpdateCommand) (result *model.
 
 	updated := make(map[string]interface{})
 
-	if c.Name != nil {
+	if c.Name != nil && c.Name != &result.Name {
 		updated["name"] = *c.Name
 	}
 
-	if c.Name != nil {
-		updated["name"] = *c.Name
-	}
-
-	if c.Description != nil {
+	if c.Description != nil && c.Description != &result.Description {
 		updated["description"] = *c.Description
 	}
 
-	if c.Code != nil {
-		condition := make(map[string]interface{})
-		condition["code"] = *c.Code
-		cnt, err := collection.Product().Collection().CountDocuments(ctx, condition)
-		if err != nil {
-			log.Println("ProductUpdate", map[string]interface{}{"command: ": c}, err)
-			codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
-			return nil, fmt.Errorf(codeErr)
-		}
+	if c.Code != nil && c.Code != &result.Code {
+		// condition := make(map[string]interface{})
+		// condition["code"] = *c.Code
+		// cnt, err := collection.Product().Collection().CountDocuments(ctx, condition)
+		// if err != nil {
+		// 	log.Println("ProductUpdate", map[string]interface{}{"command: ": c}, err)
+		// 	codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
+		// 	return nil, fmt.Errorf(codeErr)
+		// }
 
-		if cnt > 0 {
-			codeErr := fmt.Sprintf("%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.ProductCodeExist)
-			return nil, fmt.Errorf(codeErr)
-		}
+		// if cnt > 0 {
+		// 	codeErr := fmt.Sprintf("%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.ProductCodeExist)
+		// 	return nil, fmt.Errorf(codeErr)
+		// }
 
 		updated["code"] = *c.Code
 	}
 
-	if c.UnitPrice != nil {
+	if c.UnitPrice != nil && c.UnitPrice != &result.UnitPrice {
 		updated["unit_price"] = *c.UnitPrice
 	}
 
-	if c.CatalogLink != nil {
+	if c.CatalogLink != nil && c.CatalogLink != &result.CatalogLink {
 		updated["catalog_link"] = *c.CatalogLink
 	}
 
-	if c.CategoryID != nil {
+	if c.CategoryID != nil && c.CategoryID != &result.CategoryID {
 		updated["category_id"] = *c.CategoryID
 	}
 

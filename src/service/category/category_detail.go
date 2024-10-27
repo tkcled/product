@@ -35,8 +35,7 @@ func CategoryDetail(ctx context.Context, c *CategoryDetailCommand) (result *mode
 	err = collection.Category().Collection().FindOne(ctx, bson.M{"_id": c.CategoryID}).Decode(result)
 	if err != nil {
 		log.Println("CategoryDetail", map[string]interface{}{"command: ": c}, err)
-		codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Category, src_const.InternalError, err)
-		return nil, fmt.Errorf(codeErr)
+		return &model.Category{}, nil
 	}
 
 	return result, nil
