@@ -56,6 +56,7 @@ type ComplexityRoot struct {
 		ID          func(childComplexity int) int
 		Name        func(childComplexity int) int
 		Parent      func(childComplexity int) int
+		Seq         func(childComplexity int) int
 	}
 
 	CategoryPagination struct {
@@ -92,6 +93,8 @@ type ComplexityRoot struct {
 		Description func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Image       func(childComplexity int) int
+		IsSpecial   func(childComplexity int) int
+		Metadata    func(childComplexity int) int
 		Name        func(childComplexity int) int
 		UnitPrice   func(childComplexity int) int
 	}
@@ -106,6 +109,7 @@ type ComplexityRoot struct {
 		CategoryList       func(childComplexity int, parentID string) int
 		ProductDetail      func(childComplexity int, productID string) int
 		ProductPagination  func(childComplexity int, page int, limit int, orderBy *string, search map[string]interface{}) int
+		ProductSpecial     func(childComplexity int) int
 		__resolve__service func(childComplexity int) int
 	}
 
@@ -134,6 +138,7 @@ type QueryResolver interface {
 	CategoryList(ctx context.Context, parentID string) ([]graph_model.Category, error)
 	ProductDetail(ctx context.Context, productID string) (*graph_model.Product, error)
 	ProductPagination(ctx context.Context, page int, limit int, orderBy *string, search map[string]interface{}) (*graph_model.ProductPagination, error)
+	ProductSpecial(ctx context.Context) ([]graph_model.Product, error)
 }
 
 type executableSchema struct {
@@ -189,6 +194,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Category.Parent(childComplexity), true
+
+	case "Category.seq":
+		if e.complexity.Category.Seq == nil {
+			break
+		}
+
+		return e.complexity.Category.Seq(childComplexity), true
 
 	case "CategoryPagination.paging":
 		if e.complexity.CategoryPagination.Paging == nil {
@@ -367,6 +379,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Product.Image(childComplexity), true
 
+	case "Product.is_special":
+		if e.complexity.Product.IsSpecial == nil {
+			break
+		}
+
+		return e.complexity.Product.IsSpecial(childComplexity), true
+
+	case "Product.metadata":
+		if e.complexity.Product.Metadata == nil {
+			break
+		}
+
+		return e.complexity.Product.Metadata(childComplexity), true
+
 	case "Product.name":
 		if e.complexity.Product.Name == nil {
 			break
@@ -442,6 +468,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ProductPagination(childComplexity, args["page"].(int), args["limit"].(int), args["order_by"].(*string), args["search"].(map[string]interface{})), true
+
+	case "Query.productSpecial":
+		if e.complexity.Query.ProductSpecial == nil {
+			break
+		}
+
+		return e.complexity.Query.ProductSpecial(childComplexity), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -592,6 +625,8 @@ input CategoryDelete {
   unit_price: Float!
   catalog_link: String!
   category_id: String!
+  metadata: String! = ""
+  is_special: Boolean! = false
 }
 
 input ProductUpdate {
@@ -603,6 +638,8 @@ input ProductUpdate {
   unit_price: Float
   catalog_link: String
   category_id: String
+  metadata: String
+  is_special: Boolean
 }
 
 input ProductDelete {
@@ -616,6 +653,7 @@ input ProductDelete {
   description: String!
   parent: Category! @goField(forceResolver: true)
   children: [Category!]! @goField(forceResolver: true)
+  seq: Int!
 }
 
 type CategoryPagination {
@@ -656,6 +694,8 @@ type Pagination {
   unit_price: Float!
   catalog_link: String!
   category: Category! @goField(forceResolver: true)
+  metadata: String!
+  is_special: Boolean!
 }
 
 type ProductPagination {
@@ -682,6 +722,7 @@ extend type Mutation {
     order_by: String
     search: Map
   ): ProductPagination!
+  productSpecial: [Product!]!
 }
 
 extend type Mutation {
@@ -1141,6 +1182,8 @@ func (ec *executionContext) fieldContext_Category_parent(_ context.Context, fiel
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -1197,8 +1240,54 @@ func (ec *executionContext) fieldContext_Category_children(_ context.Context, fi
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_seq(ctx context.Context, field graphql.CollectedField, obj *graph_model.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_seq(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Seq, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_seq(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1259,6 +1348,10 @@ func (ec *executionContext) fieldContext_CategoryPagination_rows(_ context.Conte
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Product_metadata(ctx, field)
+			case "is_special":
+				return ec.fieldContext_Product_is_special(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -1501,6 +1594,8 @@ func (ec *executionContext) fieldContext_Mutation_categoryAdd(ctx context.Contex
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -1568,6 +1663,8 @@ func (ec *executionContext) fieldContext_Mutation_categoryUpdate(ctx context.Con
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -1635,6 +1732,8 @@ func (ec *executionContext) fieldContext_Mutation_categoryDelete(ctx context.Con
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -1708,6 +1807,10 @@ func (ec *executionContext) fieldContext_Mutation_productAdd(ctx context.Context
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Product_metadata(ctx, field)
+			case "is_special":
+				return ec.fieldContext_Product_is_special(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -1781,6 +1884,10 @@ func (ec *executionContext) fieldContext_Mutation_productUpdate(ctx context.Cont
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Product_metadata(ctx, field)
+			case "is_special":
+				return ec.fieldContext_Product_is_special(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -1854,6 +1961,10 @@ func (ec *executionContext) fieldContext_Mutation_productDelete(ctx context.Cont
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Product_metadata(ctx, field)
+			case "is_special":
+				return ec.fieldContext_Product_is_special(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -2405,8 +2516,98 @@ func (ec *executionContext) fieldContext_Product_category(_ context.Context, fie
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Product_metadata(ctx context.Context, field graphql.CollectedField, obj *graph_model.Product) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Product_metadata(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Metadata, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Product_metadata(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Product_is_special(ctx context.Context, field graphql.CollectedField, obj *graph_model.Product) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Product_is_special(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsSpecial, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Product_is_special(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2467,6 +2668,10 @@ func (ec *executionContext) fieldContext_ProductPagination_rows(_ context.Contex
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Product_metadata(ctx, field)
+			case "is_special":
+				return ec.fieldContext_Product_is_special(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -2577,6 +2782,8 @@ func (ec *executionContext) fieldContext_Query_categoryDetail(ctx context.Contex
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -2644,6 +2851,8 @@ func (ec *executionContext) fieldContext_Query_categoryList(ctx context.Context,
 				return ec.fieldContext_Category_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -2717,6 +2926,10 @@ func (ec *executionContext) fieldContext_Query_productDetail(ctx context.Context
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Product_metadata(ctx, field)
+			case "is_special":
+				return ec.fieldContext_Product_is_special(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -2792,6 +3005,72 @@ func (ec *executionContext) fieldContext_Query_productPagination(ctx context.Con
 	if fc.Args, err = ec.field_Query_productPagination_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_productSpecial(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_productSpecial(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProductSpecial(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]graph_model.Product)
+	fc.Result = res
+	return ec.marshalNProduct2ᚕhshelbyᚑtkcledᚑproductᚋsrcᚋgraphᚋgeneratedᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_productSpecial(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Product_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Product_name(ctx, field)
+			case "image":
+				return ec.fieldContext_Product_image(ctx, field)
+			case "description":
+				return ec.fieldContext_Product_description(ctx, field)
+			case "code":
+				return ec.fieldContext_Product_code(ctx, field)
+			case "unit_price":
+				return ec.fieldContext_Product_unit_price(ctx, field)
+			case "catalog_link":
+				return ec.fieldContext_Product_catalog_link(ctx, field)
+			case "category":
+				return ec.fieldContext_Product_category(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Product_metadata(ctx, field)
+			case "is_special":
+				return ec.fieldContext_Product_is_special(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -4913,8 +5192,14 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 	if _, present := asMap["description"]; !present {
 		asMap["description"] = ""
 	}
+	if _, present := asMap["metadata"]; !present {
+		asMap["metadata"] = ""
+	}
+	if _, present := asMap["is_special"]; !present {
+		asMap["is_special"] = false
+	}
 
-	fieldsInOrder := [...]string{"name", "description", "code", "unit_price", "catalog_link", "category_id"}
+	fieldsInOrder := [...]string{"name", "description", "code", "unit_price", "catalog_link", "category_id", "metadata", "is_special"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4963,6 +5248,20 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 				return it, err
 			}
 			it.CategoryID = data
+		case "metadata":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metadata"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Metadata = data
+		case "is_special":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("is_special"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSpecial = data
 		}
 	}
 
@@ -5003,7 +5302,7 @@ func (ec *executionContext) unmarshalInputProductUpdate(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "description", "code", "unit_price", "catalog_link", "category_id"}
+	fieldsInOrder := [...]string{"id", "name", "description", "code", "unit_price", "catalog_link", "category_id", "metadata", "is_special"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5059,6 +5358,20 @@ func (ec *executionContext) unmarshalInputProductUpdate(ctx context.Context, obj
 				return it, err
 			}
 			it.CategoryID = data
+		case "metadata":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metadata"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Metadata = data
+		case "is_special":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("is_special"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSpecial = data
 		}
 	}
 
@@ -5171,6 +5484,11 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "seq":
+			out.Values[i] = ec._Category_seq(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5507,6 +5825,16 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "metadata":
+			out.Values[i] = ec._Product_metadata(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "is_special":
+			out.Values[i] = ec._Product_is_special(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5669,6 +5997,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_productPagination(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "productSpecial":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_productSpecial(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

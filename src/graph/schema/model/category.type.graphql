@@ -5,6 +5,7 @@ type Category {
   description: String!
   parent: Category! @goField(forceResolver: true)
   children: [Category!]! @goField(forceResolver: true)
+  seq: Int!
 }
 
 type CategoryPagination {

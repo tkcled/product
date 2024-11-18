@@ -7,6 +7,8 @@ type Product {
   unit_price: Float!
   catalog_link: String!
   category: Category! @goField(forceResolver: true)
+  metadata: String!
+  is_special: Boolean!
 }
 
 type ProductPagination {

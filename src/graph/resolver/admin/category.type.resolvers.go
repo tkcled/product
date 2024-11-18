@@ -13,6 +13,10 @@ import (
 
 // Parent is the resolver for the parent field.
 func (r *categoryResolver) Parent(ctx context.Context, obj *graph_model.Category) (*graph_model.Category, error) {
+	if obj.Parent == nil {
+		return &graph_model.Category{}, nil
+	}
+
 	if obj.Parent.ID == "" {
 		return &graph_model.Category{}, nil
 	}

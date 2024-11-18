@@ -5,6 +5,8 @@ input ProductAdd {
   unit_price: Float!
   catalog_link: String!
   category_id: String!
+  metadata: String! = ""
+  is_special: Boolean! = false
 }
 
 input ProductUpdate {
@@ -16,6 +18,8 @@ input ProductUpdate {
   unit_price: Float
   catalog_link: String
   category_id: String
+  metadata: String
+  is_special: Boolean
 }
 
 input ProductDelete {

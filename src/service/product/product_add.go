@@ -19,6 +19,8 @@ type ProductAddCommand struct {
 	UnitPrice   float64
 	CatalogLink string
 	CategoryID  string
+	Metadata    string
+	IsSpecial   bool
 }
 
 func (c *ProductAddCommand) Valid() error {
@@ -60,6 +62,8 @@ func ProductAdd(ctx context.Context, c *ProductAddCommand) (result *model.Produc
 		UnitPrice:   c.UnitPrice,
 		CatalogLink: c.CatalogLink,
 		CategoryID:  c.CategoryID,
+		Metadata:    c.Metadata,
+		IsSpecial:   c.IsSpecial,
 
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

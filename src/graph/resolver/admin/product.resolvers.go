@@ -21,6 +21,8 @@ func (r *mutationResolver) ProductAdd(ctx context.Context, data graph_model.Prod
 		UnitPrice:   data.UnitPrice,
 		CatalogLink: data.CatalogLink,
 		CategoryID:  data.CategoryID,
+		Metadata:    data.Metadata,
+		IsSpecial:   data.IsSpecial,
 	}
 
 	result, err := service_product.ProductAdd(ctx, input)
@@ -42,6 +44,8 @@ func (r *mutationResolver) ProductUpdate(ctx context.Context, data graph_model.P
 		CatalogLink: data.CatalogLink,
 		CategoryID:  data.CategoryID,
 		Description: data.Description,
+		Metadata:    data.Metadata,
+		IsSpecial:   data.IsSpecial,
 	}
 
 	result, err := service_product.ProductUpdate(ctx, input)
@@ -117,4 +121,19 @@ func (r *queryResolver) ProductPagination(ctx context.Context, page int, limit i
 			Total:       total,
 		},
 	}, nil
+}
+
+// ProductSpecial is the resolver for the productSpecial field.
+func (r *queryResolver) ProductSpecial(ctx context.Context) ([]graph_model.Product, error) {
+	schools, err := service_product.SpecialProduct(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]graph_model.Product, 0)
+	for i := 0; i < len(schools); i++ {
+		result = append(result, *schools[i].ConvertToModelGraph())
+	}
+
+	return result, nil
 }

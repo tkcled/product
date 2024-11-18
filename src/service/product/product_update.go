@@ -20,6 +20,8 @@ type ProductUpdateCommand struct {
 	UnitPrice   *float64
 	CatalogLink *string
 	CategoryID  *string
+	Metadata    *string
+	IsSpecial   *bool
 }
 
 func (c *ProductUpdateCommand) Valid() error {
@@ -83,6 +85,14 @@ func ProductUpdate(ctx context.Context, c *ProductUpdateCommand) (result *model.
 
 	if c.CategoryID != nil && c.CategoryID != &result.CategoryID {
 		updated["category_id"] = *c.CategoryID
+	}
+
+	if c.Metadata != nil {
+		updated["metadata"] = *c.Metadata
+	}
+
+	if c.IsSpecial != nil {
+		updated["is_special"] = *c.IsSpecial
 	}
 
 	_, err = collection.Product().Collection().UpdateByID(ctx, c.ProductID, bson.M{"$set": updated})

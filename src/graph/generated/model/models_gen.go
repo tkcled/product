@@ -8,6 +8,7 @@ type Category struct {
 	Description string     `json:"description"`
 	Parent      *Category  `json:"parent"`
 	Children    []Category `json:"children"`
+	Seq         int        `json:"seq"`
 }
 
 type CategoryAdd struct {
@@ -56,6 +57,8 @@ type Product struct {
 	UnitPrice   float64  `json:"unit_price"`
 	CatalogLink string   `json:"catalog_link"`
 	Category    Category `json:"category"`
+	Metadata    string   `json:"metadata"`
+	IsSpecial   bool     `json:"is_special"`
 }
 
 type ProductAdd struct {
@@ -65,6 +68,8 @@ type ProductAdd struct {
 	UnitPrice   float64 `json:"unit_price"`
 	CatalogLink string  `json:"catalog_link"`
 	CategoryID  string  `json:"category_id"`
+	Metadata    string  `json:"metadata"`
+	IsSpecial   bool    `json:"is_special"`
 }
 
 type ProductDelete struct {
@@ -84,6 +89,8 @@ type ProductUpdate struct {
 	UnitPrice   *float64 `json:"unit_price,omitempty"`
 	CatalogLink *string  `json:"catalog_link,omitempty"`
 	CategoryID  *string  `json:"category_id,omitempty"`
+	Metadata    *string  `json:"metadata,omitempty"`
+	IsSpecial   *bool    `json:"is_special,omitempty"`
 }
 
 type Query struct {

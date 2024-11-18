@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"github.com/urfave/cli/v2"
+	"go.mongodb.org/mongo-driver/bson"
 
 	config "hshelby-tkcled-product/config"
 	"hshelby-tkcled-product/src/database"
+	"hshelby-tkcled-product/src/database/collection"
 	"hshelby-tkcled-product/src/server"
 )
 
@@ -103,6 +105,19 @@ func Serve(c *cli.Context) error {
 	err := database.ConnectDatabse(ctx)
 	if err != nil {
 		panic(err)
+	}
+
+	filter := bson.M{} // Lọc tất cả các bản ghi
+	update := bson.M{
+		"$set": bson.M{
+			"seq": 0, // Tên field mới và giá trị mặc định
+		},
+	}
+
+	// Thực hiện update với tất cả các bản ghi
+	_, err = collection.Category().Collection().UpdateMany(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return server.ServeGraph(c.Context, c.String("addr-graph"))

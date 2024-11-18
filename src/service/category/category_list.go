@@ -10,6 +10,7 @@ import (
 	"sort"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type CategoryListCommand struct {
@@ -22,7 +23,8 @@ func ListCategory(ctx context.Context, c CategoryListCommand) (results []model.C
 		log.Println("[service_category.ListCategory] end error", err)
 	}()
 
-	cur, err := collection.Category().Collection().Find(ctx, bson.M{"parent_id": c.ParentID})
+	findOptions := options.Find().SetSort(bson.D{{"seq", 1}})
+	cur, err := collection.Category().Collection().Find(ctx, bson.M{"parent_id": c.ParentID}, findOptions)
 	if err != nil {
 		codeErr := src_const.ServiceErr_Product + src_const.ElementErr_Category + src_const.InternalError
 		return nil, fmt.Errorf(codeErr)

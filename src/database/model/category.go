@@ -13,6 +13,7 @@ type Category struct {
 	Description string      `json:"description" bson:"description"`
 	ParentID    string      `json:"parent_id" bson:"parent_id"`
 	Children    *[]Category `json:"children,omitempty"`
+	Seq         int         `json:"seq" bson:"seq"`
 
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
@@ -27,6 +28,7 @@ func (c *Category) ConvertToModelGraph() *graph_model.Category {
 		Parent: &graph_model.Category{
 			ID: c.ParentID,
 		},
+		Seq: c.Seq,
 	}
 
 	if c.Children != nil {
