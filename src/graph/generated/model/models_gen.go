@@ -49,27 +49,29 @@ type Pagination struct {
 }
 
 type Product struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Image       string   `json:"image"`
-	Description string   `json:"description"`
-	Code        string   `json:"code"`
-	UnitPrice   float64  `json:"unit_price"`
-	CatalogLink string   `json:"catalog_link"`
-	Category    Category `json:"category"`
-	Metadata    string   `json:"metadata"`
-	IsSpecial   bool     `json:"is_special"`
+	ID             string     `json:"id"`
+	Name           string     `json:"name"`
+	Image          string     `json:"image"`
+	Description    string     `json:"description"`
+	Code           string     `json:"code"`
+	UnitPrice      float64    `json:"unit_price"`
+	CatalogLink    string     `json:"catalog_link"`
+	Category       []Category `json:"category"`
+	ParentCategory []Category `json:"parent_category"`
+	Metadata       string     `json:"metadata"`
+	IsSpecial      bool       `json:"is_special"`
 }
 
 type ProductAdd struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Code        string  `json:"code"`
-	UnitPrice   float64 `json:"unit_price"`
-	CatalogLink string  `json:"catalog_link"`
-	CategoryID  string  `json:"category_id"`
-	Metadata    string  `json:"metadata"`
-	IsSpecial   bool    `json:"is_special"`
+	Name             string  `json:"name"`
+	Description      string  `json:"description"`
+	Code             string  `json:"code"`
+	UnitPrice        float64 `json:"unit_price"`
+	CatalogLink      string  `json:"catalog_link"`
+	CategoryID       string  `json:"category_id"`
+	ParentCategoryID string  `json:"parent_category_id"`
+	Metadata         string  `json:"metadata"`
+	IsSpecial        bool    `json:"is_special"`
 }
 
 type ProductDelete struct {
@@ -82,15 +84,16 @@ type ProductPagination struct {
 }
 
 type ProductUpdate struct {
-	ID          string   `json:"id"`
-	Name        *string  `json:"name,omitempty"`
-	Description *string  `json:"description,omitempty"`
-	Code        *string  `json:"code,omitempty"`
-	UnitPrice   *float64 `json:"unit_price,omitempty"`
-	CatalogLink *string  `json:"catalog_link,omitempty"`
-	CategoryID  *string  `json:"category_id,omitempty"`
-	Metadata    *string  `json:"metadata,omitempty"`
-	IsSpecial   *bool    `json:"is_special,omitempty"`
+	ID               string   `json:"id"`
+	Name             *string  `json:"name,omitempty"`
+	Description      *string  `json:"description,omitempty"`
+	Code             *string  `json:"code,omitempty"`
+	UnitPrice        *float64 `json:"unit_price,omitempty"`
+	CatalogLink      *string  `json:"catalog_link,omitempty"`
+	CategoryID       *string  `json:"category_id,omitempty"`
+	ParentCategoryID *string  `json:"parent_category_id,omitempty"`
+	Metadata         *string  `json:"metadata,omitempty"`
+	IsSpecial        *bool    `json:"is_special,omitempty"`
 }
 
 type Query struct {

@@ -6,27 +6,62 @@ package resolver_admin
 
 import (
 	"context"
+	"fmt"
 	generated_admin "hshelby-tkcled-product/src/graph/generated/admin"
 	graph_model "hshelby-tkcled-product/src/graph/generated/model"
 	service_category "hshelby-tkcled-product/src/service/category"
 )
 
 // Category is the resolver for the category field.
-func (r *productResolver) Category(ctx context.Context, obj *graph_model.Product) (*graph_model.Category, error) {
-	if obj.Category.ID == "" {
-		return &graph_model.Category{}, nil
+func (r *productResolver) Category(ctx context.Context, obj *graph_model.Product) ([]graph_model.Category, error) {
+	if len(obj.Category) == 0 {
+		return []graph_model.Category{}, nil
 	}
 
-	input := &service_category.CategoryDetailCommand{
-		CategoryID: obj.Category.ID,
+	listCate := []graph_model.Category{}
+
+	for _, category := range obj.Category {
+		input := &service_category.CategoryDetailCommand{
+			CategoryID: category.ID,
+		}
+
+		cate, err := service_category.CategoryDetail(ctx, input)
+		if err != nil {
+			fmt.Println(err)
+			listCate = append(listCate, graph_model.Category{})
+		}
+
+		listCate = append(listCate, *cate.ConvertToModelGraph())
+
 	}
 
-	result, err := service_category.CategoryDetail(ctx, input)
-	if err != nil {
-		return &graph_model.Category{}, err
+	return listCate, nil
+}
+
+// ParentCategory is the resolver for the parent_category field.
+func (r *productResolver) ParentCategory(ctx context.Context, obj *graph_model.Product) ([]graph_model.Category, error) {
+	if len(obj.ParentCategory) == 0 {
+		return []graph_model.Category{}, nil
 	}
 
-	return result.ConvertToModelGraph(), nil
+	listCate := []graph_model.Category{}
+
+	for _, category := range obj.ParentCategory {
+		input := &service_category.CategoryDetailCommand{
+			CategoryID: category.ID,
+		}
+
+		cate, err := service_category.CategoryDetail(ctx, input)
+		if err != nil {
+			fmt.Println(err)
+			listCate = append(listCate, graph_model.Category{})
+		}
+
+		listCate = append(listCate, *cate.ConvertToModelGraph())
+
+	}
+
+	return listCate, nil
 }
 
 // Product returns generated_admin.ProductResolver implementation.

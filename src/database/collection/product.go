@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"go.mongodb.org/mongo-driver/bson"
 	mongoDriver "go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"hshelby-tkcled-product/config"
 	"hshelby-tkcled-product/src/utilities"
@@ -16,10 +14,6 @@ import (
 )
 
 const ProductCollection = "product"
-
-const (
-	PrductIndexCode = "code"
-)
 
 var (
 	_productCollection        *ProductMongoCollection
@@ -64,17 +58,7 @@ func NewProductMongoCollection(client *mongo.MongoDB, databaseName string) (*Pro
 func (repo *ProductMongoCollection) SetIndex() {
 	col := repo.client.Client().Database(repo.databaseName).Collection(repo.collectionName)
 
-	indexes := []mongoDriver.IndexModel{
-		{
-			Keys: bson.M{
-				PrductIndexCode: 1,
-			},
-			Options: &options.IndexOptions{
-				Name:   utilities.SetString(PrductIndexCode),
-				Unique: utilities.SetBool(true),
-			},
-		},
-	}
+	indexes := []mongoDriver.IndexModel{}
 
 	if !repo.needIndex(col) {
 		return
@@ -84,9 +68,7 @@ func (repo *ProductMongoCollection) SetIndex() {
 }
 
 func (repo *ProductMongoCollection) needIndex(col *mongoDriver.Collection) bool {
-	keyIndexes := []string{
-		PrductIndexCode,
-	}
+	keyIndexes := []string{}
 
 	listIndexes, err := col.Indexes().ListSpecifications(context.Background())
 	if err != nil {

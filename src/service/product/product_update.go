@@ -14,14 +14,15 @@ import (
 type ProductUpdateCommand struct {
 	ProductID string
 
-	Name        *string
-	Description *string
-	Code        *string
-	UnitPrice   *float64
-	CatalogLink *string
-	CategoryID  *string
-	Metadata    *string
-	IsSpecial   *bool
+	Name             *string
+	Description      *string
+	Code             *string
+	UnitPrice        *float64
+	CatalogLink      *string
+	CategoryID       *string
+	ParentCategoryID *string
+	Metadata         *string
+	IsSpecial        *bool
 }
 
 func (c *ProductUpdateCommand) Valid() error {
@@ -58,20 +59,6 @@ func ProductUpdate(ctx context.Context, c *ProductUpdateCommand) (result *model.
 	}
 
 	if c.Code != nil && c.Code != &result.Code {
-		// condition := make(map[string]interface{})
-		// condition["code"] = *c.Code
-		// cnt, err := collection.Product().Collection().CountDocuments(ctx, condition)
-		// if err != nil {
-		// 	log.Println("ProductUpdate", map[string]interface{}{"command: ": c}, err)
-		// 	codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
-		// 	return nil, fmt.Errorf(codeErr)
-		// }
-
-		// if cnt > 0 {
-		// 	codeErr := fmt.Sprintf("%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.ProductCodeExist)
-		// 	return nil, fmt.Errorf(codeErr)
-		// }
-
 		updated["code"] = *c.Code
 	}
 
@@ -85,6 +72,10 @@ func ProductUpdate(ctx context.Context, c *ProductUpdateCommand) (result *model.
 
 	if c.CategoryID != nil && c.CategoryID != &result.CategoryID {
 		updated["category_id"] = *c.CategoryID
+	}
+
+	if c.ParentCategoryID != nil && c.ParentCategoryID != &result.ParentCategoryID {
+		updated["parent_category_id"] = *c.ParentCategoryID
 	}
 
 	if c.Metadata != nil {

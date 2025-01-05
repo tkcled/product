@@ -87,16 +87,17 @@ type ComplexityRoot struct {
 	}
 
 	Product struct {
-		CatalogLink func(childComplexity int) int
-		Category    func(childComplexity int) int
-		Code        func(childComplexity int) int
-		Description func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Image       func(childComplexity int) int
-		IsSpecial   func(childComplexity int) int
-		Metadata    func(childComplexity int) int
-		Name        func(childComplexity int) int
-		UnitPrice   func(childComplexity int) int
+		CatalogLink    func(childComplexity int) int
+		Category       func(childComplexity int) int
+		Code           func(childComplexity int) int
+		Description    func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Image          func(childComplexity int) int
+		IsSpecial      func(childComplexity int) int
+		Metadata       func(childComplexity int) int
+		Name           func(childComplexity int) int
+		ParentCategory func(childComplexity int) int
+		UnitPrice      func(childComplexity int) int
 	}
 
 	ProductPagination struct {
@@ -131,7 +132,8 @@ type MutationResolver interface {
 	ProductDelete(ctx context.Context, data graph_model.ProductDelete) (*graph_model.Product, error)
 }
 type ProductResolver interface {
-	Category(ctx context.Context, obj *graph_model.Product) (*graph_model.Category, error)
+	Category(ctx context.Context, obj *graph_model.Product) ([]graph_model.Category, error)
+	ParentCategory(ctx context.Context, obj *graph_model.Product) ([]graph_model.Category, error)
 }
 type QueryResolver interface {
 	CategoryDetail(ctx context.Context, categoryID string) (*graph_model.Category, error)
@@ -400,6 +402,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Product.Name(childComplexity), true
 
+	case "Product.parent_category":
+		if e.complexity.Product.ParentCategory == nil {
+			break
+		}
+
+		return e.complexity.Product.ParentCategory(childComplexity), true
+
 	case "Product.unit_price":
 		if e.complexity.Product.UnitPrice == nil {
 			break
@@ -621,10 +630,11 @@ input CategoryDelete {
 	{Name: "../../schema/model/product.input.graphql", Input: `input ProductAdd {
   name: String!
   description: String! = ""
-  code: String!
+  code: String! = ""
   unit_price: Float!
-  catalog_link: String!
+  catalog_link: String! = ""
   category_id: String!
+  parent_category_id: String!
   metadata: String! = ""
   is_special: Boolean! = false
 }
@@ -638,6 +648,7 @@ input ProductUpdate {
   unit_price: Float
   catalog_link: String
   category_id: String
+  parent_category_id: String
   metadata: String
   is_special: Boolean
 }
@@ -693,7 +704,8 @@ type Pagination {
   code: String!
   unit_price: Float!
   catalog_link: String!
-  category: Category! @goField(forceResolver: true)
+  category: [Category!]! @goField(forceResolver: true)
+  parent_category: [Category!]! @goField(forceResolver: true)
   metadata: String!
   is_special: Boolean!
 }
@@ -1348,6 +1360,8 @@ func (ec *executionContext) fieldContext_CategoryPagination_rows(_ context.Conte
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "parent_category":
+				return ec.fieldContext_Product_parent_category(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Product_metadata(ctx, field)
 			case "is_special":
@@ -1807,6 +1821,8 @@ func (ec *executionContext) fieldContext_Mutation_productAdd(ctx context.Context
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "parent_category":
+				return ec.fieldContext_Product_parent_category(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Product_metadata(ctx, field)
 			case "is_special":
@@ -1884,6 +1900,8 @@ func (ec *executionContext) fieldContext_Mutation_productUpdate(ctx context.Cont
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "parent_category":
+				return ec.fieldContext_Product_parent_category(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Product_metadata(ctx, field)
 			case "is_special":
@@ -1961,6 +1979,8 @@ func (ec *executionContext) fieldContext_Mutation_productDelete(ctx context.Cont
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "parent_category":
+				return ec.fieldContext_Product_parent_category(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Product_metadata(ctx, field)
 			case "is_special":
@@ -2493,12 +2513,70 @@ func (ec *executionContext) _Product_category(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*graph_model.Category)
+	res := resTmp.([]graph_model.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚖhshelbyᚑtkcledᚑproductᚋsrcᚋgraphᚋgeneratedᚋmodelᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚕhshelbyᚑtkcledᚑproductᚋsrcᚋgraphᚋgeneratedᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Product_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Category_description(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Category_children(ctx, field)
+			case "seq":
+				return ec.fieldContext_Category_seq(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Product_parent_category(ctx context.Context, field graphql.CollectedField, obj *graph_model.Product) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Product_parent_category(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Product().ParentCategory(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]graph_model.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚕhshelbyᚑtkcledᚑproductᚋsrcᚋgraphᚋgeneratedᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Product_parent_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Product",
 		Field:      field,
@@ -2668,6 +2746,8 @@ func (ec *executionContext) fieldContext_ProductPagination_rows(_ context.Contex
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "parent_category":
+				return ec.fieldContext_Product_parent_category(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Product_metadata(ctx, field)
 			case "is_special":
@@ -2926,6 +3006,8 @@ func (ec *executionContext) fieldContext_Query_productDetail(ctx context.Context
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "parent_category":
+				return ec.fieldContext_Product_parent_category(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Product_metadata(ctx, field)
 			case "is_special":
@@ -3064,6 +3146,8 @@ func (ec *executionContext) fieldContext_Query_productSpecial(_ context.Context,
 				return ec.fieldContext_Product_catalog_link(ctx, field)
 			case "category":
 				return ec.fieldContext_Product_category(ctx, field)
+			case "parent_category":
+				return ec.fieldContext_Product_parent_category(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Product_metadata(ctx, field)
 			case "is_special":
@@ -5192,6 +5276,12 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 	if _, present := asMap["description"]; !present {
 		asMap["description"] = ""
 	}
+	if _, present := asMap["code"]; !present {
+		asMap["code"] = ""
+	}
+	if _, present := asMap["catalog_link"]; !present {
+		asMap["catalog_link"] = ""
+	}
 	if _, present := asMap["metadata"]; !present {
 		asMap["metadata"] = ""
 	}
@@ -5199,7 +5289,7 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 		asMap["is_special"] = false
 	}
 
-	fieldsInOrder := [...]string{"name", "description", "code", "unit_price", "catalog_link", "category_id", "metadata", "is_special"}
+	fieldsInOrder := [...]string{"name", "description", "code", "unit_price", "catalog_link", "category_id", "parent_category_id", "metadata", "is_special"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5248,6 +5338,13 @@ func (ec *executionContext) unmarshalInputProductAdd(ctx context.Context, obj in
 				return it, err
 			}
 			it.CategoryID = data
+		case "parent_category_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parent_category_id"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ParentCategoryID = data
 		case "metadata":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metadata"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -5302,7 +5399,7 @@ func (ec *executionContext) unmarshalInputProductUpdate(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "description", "code", "unit_price", "catalog_link", "category_id", "metadata", "is_special"}
+	fieldsInOrder := [...]string{"id", "name", "description", "code", "unit_price", "catalog_link", "category_id", "parent_category_id", "metadata", "is_special"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5358,6 +5455,13 @@ func (ec *executionContext) unmarshalInputProductUpdate(ctx context.Context, obj
 				return it, err
 			}
 			it.CategoryID = data
+		case "parent_category_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parent_category_id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ParentCategoryID = data
 		case "metadata":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metadata"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -5799,6 +5903,42 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 					}
 				}()
 				res = ec._Product_category(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "parent_category":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Product_parent_category(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

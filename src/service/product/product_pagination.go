@@ -50,7 +50,10 @@ func ProductPagination(ctx context.Context, c *ProductPaginationCommand) (total 
 	}
 
 	if categoryID, ok := c.Search["category_id"]; ok {
-		condition["category_id"] = categoryID
+		condition["$or"] = []bson.M{
+			{"category_id": bson.M{"$regex": categoryID, "$options": "i"}}, // Condition 1
+			{"parent_category_id": bson.M{"$regex": categoryID, "$options": "i"}},
+		}
 	}
 
 	if code, ok := c.Search["code"]; ok {
@@ -72,7 +75,6 @@ func ProductPagination(ctx context.Context, c *ProductPaginationCommand) (total 
 	if c.OrderBy == "" {
 		objOrderBy = bson.M{"name": src_const.DESC}
 	}
-	fmt.Println(condition)
 
 	matchStage := bson.D{{Key: "$match", Value: condition}}
 
@@ -89,6 +91,8 @@ func ProductPagination(ctx context.Context, c *ProductPaginationCommand) (total 
 			},
 		},
 	}}
+
+	fmt.Println(condition)
 
 	sortStage := bson.D{{Key: "$sort", Value: objOrderBy}}
 

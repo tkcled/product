@@ -15,14 +15,15 @@ import (
 // ProductAdd is the resolver for the productAdd field.
 func (r *mutationResolver) ProductAdd(ctx context.Context, data graph_model.ProductAdd) (*graph_model.Product, error) {
 	input := &service_product.ProductAddCommand{
-		Name:        data.Name,
-		Description: data.Description,
-		Code:        data.Code,
-		UnitPrice:   data.UnitPrice,
-		CatalogLink: data.CatalogLink,
-		CategoryID:  data.CategoryID,
-		Metadata:    data.Metadata,
-		IsSpecial:   data.IsSpecial,
+		Name:             data.Name,
+		Description:      data.Description,
+		Code:             data.Code,
+		UnitPrice:        data.UnitPrice,
+		CatalogLink:      data.CatalogLink,
+		CategoryID:       data.CategoryID,
+		ParentCategoryID: data.ParentCategoryID,
+		Metadata:         data.Metadata,
+		IsSpecial:        data.IsSpecial,
 	}
 
 	result, err := service_product.ProductAdd(ctx, input)
@@ -38,14 +39,15 @@ func (r *mutationResolver) ProductUpdate(ctx context.Context, data graph_model.P
 	input := &service_product.ProductUpdateCommand{
 		ProductID: data.ID,
 
-		Name:        data.Name,
-		Code:        data.Code,
-		UnitPrice:   data.UnitPrice,
-		CatalogLink: data.CatalogLink,
-		CategoryID:  data.CategoryID,
-		Description: data.Description,
-		Metadata:    data.Metadata,
-		IsSpecial:   data.IsSpecial,
+		Name:             data.Name,
+		Code:             data.Code,
+		UnitPrice:        data.UnitPrice,
+		CatalogLink:      data.CatalogLink,
+		CategoryID:       data.CategoryID,
+		ParentCategoryID: data.ParentCategoryID,
+		Description:      data.Description,
+		Metadata:         data.Metadata,
+		IsSpecial:        data.IsSpecial,
 	}
 
 	result, err := service_product.ProductUpdate(ctx, input)

@@ -6,7 +6,8 @@ type Product {
   code: String!
   unit_price: Float!
   catalog_link: String!
-  category: Category! @goField(forceResolver: true)
+  category: [Category!]! @goField(forceResolver: true)
+  parent_category: [Category!]! @goField(forceResolver: true)
   metadata: String!
   is_special: Boolean!
 }

@@ -13,14 +13,15 @@ import (
 )
 
 type ProductAddCommand struct {
-	Name        string
-	Description string
-	Code        string
-	UnitPrice   float64
-	CatalogLink string
-	CategoryID  string
-	Metadata    string
-	IsSpecial   bool
+	Name             string
+	Description      string
+	Code             string
+	UnitPrice        float64
+	CatalogLink      string
+	CategoryID       string
+	ParentCategoryID string
+	Metadata         string
+	IsSpecial        bool
 }
 
 func (c *ProductAddCommand) Valid() error {
@@ -38,32 +39,18 @@ func ProductAdd(ctx context.Context, c *ProductAddCommand) (result *model.Produc
 		return nil, fmt.Errorf(codeErr)
 	}
 
-	// condition := make(map[string]interface{})
-	// condition["code"] = c.Code
-
-	// cnt, err := collection.Product().Collection().CountDocuments(ctx, condition)
-	// if err == nil && cnt > 0 {
-	// 	log.Println("ProductAdd", map[string]interface{}{"command: ": c}, err)
-	// 	codeErr := fmt.Sprintf("%s-%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.InternalError, err)
-	// 	return nil, fmt.Errorf(codeErr)
-	// }
-
-	// if cnt > 0 {
-	// 	codeErr := fmt.Sprintf("%s-%s-%s", src_const.ServiceErr_Product, src_const.ElementErr_Product, src_const.ProductCodeExist)
-	// 	return nil, fmt.Errorf(codeErr)
-	// }
-
 	result = &model.Product{
 		ID: primitive.NewObjectID().Hex(),
 
-		Name:        c.Name,
-		Description: c.Description,
-		Code:        c.Code,
-		UnitPrice:   c.UnitPrice,
-		CatalogLink: c.CatalogLink,
-		CategoryID:  c.CategoryID,
-		Metadata:    c.Metadata,
-		IsSpecial:   c.IsSpecial,
+		Name:             c.Name,
+		Description:      c.Description,
+		Code:             c.Code,
+		UnitPrice:        c.UnitPrice,
+		CatalogLink:      c.CatalogLink,
+		CategoryID:       c.CategoryID,
+		ParentCategoryID: c.ParentCategoryID,
+		Metadata:         c.Metadata,
+		IsSpecial:        c.IsSpecial,
 
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

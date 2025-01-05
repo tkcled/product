@@ -12,8 +12,13 @@ import (
 )
 
 // Category is the resolver for the category field.
-func (r *productResolver) Category(ctx context.Context, obj *graph_model.Product) (*graph_model.Category, error) {
+func (r *productResolver) Category(ctx context.Context, obj *graph_model.Product) ([]graph_model.Category, error) {
 	panic(fmt.Errorf("not implemented: Category - category"))
+}
+
+// ParentCategory is the resolver for the parent_category field.
+func (r *productResolver) ParentCategory(ctx context.Context, obj *graph_model.Product) ([]graph_model.Category, error) {
+	panic(fmt.Errorf("not implemented: ParentCategory - parent_category"))
 }
 
 // Product returns generated_user.ProductResolver implementation.
